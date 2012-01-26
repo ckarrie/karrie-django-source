@@ -1,0 +1,99 @@
+{% extends 'source/html/base.html' %}
+
+{% block title %}{{ modul }} {{ block.super }}{% endblock %}
+{% block sub_content %}{{ block.super }}{% endblock %}
+{% block links %}
+			<h2>Menü</h2>
+			<ul>
+			{% if perms.source.change_modul %}
+			<li><p><a href="{{ modul.get_admin_url }}">Eintrag <em>{{ modul }}</em> ändern</a></p></li>
+			{% endif %}
+			<li><p>{% if modul.get_previous_by_last_modified %}<a href="{{ modul.get_previous_by_last_modified.get_absolute_url }}">&laquo; {{ modul.get_previous_by_last_modified }}</a>{% endif %} | {% if modul.get_next_by_last_modified %}<a href="{{ modul.get_next_by_last_modified.get_absolute_url }}">&raquo; {{ modul.get_next_by_last_modified }}</a>{% endif %}</p></li>
+			</ul>
+{% endblock %}
+
+{% block content %}
+<h2>{{ modul }}</h2>
+<table border="0">
+    <tr>
+        <th>
+		    Name
+        </th>
+        <td><p><b>{{ modul }}</b></p><p>{{ modul.code_language }}</p></td>
+        <td><p><a href="{{ modul.repository.get_absolute_url }}" title="Zeige Repository im Modulbaum">{{ modul.repository }}</a></p></td>
+    </tr>
+    <tr>
+        <th>Version</th>
+		<td colspan="2"><p>{{ modul.last_modified.date }} - Rev. {{ modul.revision }}</p></td>
+    </tr>
+    <tr>
+        <th>Verweise</th>
+        <td><p><b>Ruft auf</b></p>
+		<ul>
+			{% for a in modul.get_calls %}
+			<li><p><a href="{{ a.get_absolute_url }}">{{ a }}</a></p>
+				<ul>
+					{% for b in a.get_calls %}
+						<li><p><a href="{{ b.get_absolute_url }}">{{ b }}</a></p>
+						<ul>
+						{% for c in b.get_calls %}
+							<li><p><a href="{{ c.get_absolute_url }}">{{ c }}</a></li></p>
+						{% endfor %}
+						</ul>
+						</li>
+					{% endfor %}
+				</ul>
+			</li>
+			{% endfor %}
+		</ul>
+        </td>
+        <td>
+		<p><b>Wird aufgerufen von</b></p>
+		<ul>
+			{% for a in modul.get_called_by %}
+			<li><p><a href="{{ a.get_absolute_url }}">{{ a }}</a></p>
+				<ul>
+					{% for b in a.get_called_by %}
+						<li><p><a href="{{ b.get_absolute_url }}">{{ b }}</a></p>
+						<ul>
+						{% for c in b.get_called_by %}
+							<li><p><a href="{{ c.get_absolute_url }}">{{ c }}</a></li></p>
+						{% endfor %}
+						</ul>
+						</li>
+					{% endfor %}
+				</ul>
+			</li>
+			{% endfor %}
+		</ul>
+		</td>
+    </tr>
+    <tr>
+        <th>Parameter</th>
+        <td>
+		<p><b>Input Parameter</b></p>
+		<dl>
+			{% for ip in modul.input_params.all %}
+			<dt><p>{{ ip.key }}</p></dt>
+				<dd><p>{{ ip.value }} [{{ ip.datatype }}]</p></dd>
+			{% endfor %}
+		</dl>
+        </td>
+        <td>
+		<p><b>Output Parameter</b></p>
+		<dl>
+			{% for op in modul.output_params.all %}
+			<dt><p>{{ op.key }}</p></dt>
+				<dd><p>{{ op.value }} [{{ op.datatype }}]</p></dd>
+			{% endfor %}
+		</dl>
+        </td>
+    </tr>
+    <tr>
+        <th>Beschreibung</th>
+        <td colspan="2">
+		{{ modul.get_parsed_descr|safe }}
+		</td>
+    </tr>
+</table>
+{% endblock %}

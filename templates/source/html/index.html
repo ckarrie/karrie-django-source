@@ -1,0 +1,27 @@
+{% extends 'source/html/base.html' %}
+
+{% block title %}Paketübersicht {{ block.super }}{% endblock %}
+
+{% block sub_content %}
+{{ block.super }}
+<h2>Was ist SOURCE?</h2>
+<p>Source ist eine Webanwendung, die es ermöglicht Paketabhängigkeiten zwischen Quelltexten als 
+Baum darszustellen sowie die Verwaltung von 
+Quelltexten auf Meta-Ebene.</p>
+{% endblock %}
+
+{% block content %}
+		<h2>Pakete</h2>
+		<ul>
+		{% for packet in packets %}
+			<li><h3><a href="{{ packet.get_absolute_url }}">{{ packet }}</a></h3>
+				{{ packet.description|truncatewords_html:40|safe }}
+			<ul>
+				{% for rep in packet.reps.all %}
+				<li><p>{{ rep }}</p></li>
+				{% endfor %}
+			</ul>
+			</li>
+		{% endfor %}
+		</ul>
+{% endblock %}

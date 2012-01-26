@@ -1,0 +1,27 @@
+{% extends 'source/html/base.html' %}
+
+{% block title %}{{ block.super }}Suchergebnisse{% endblock %}
+
+{% block sub_content %}
+{{ block.super }}
+<h2>Suchabschnitte</h2>
+<ul>
+	{% for model, res in results.items %}
+	<li><p><a href="#{{ model }}">{{ model }}</a></p></li>
+	{% endfor %}
+</ul>
+{% endblock %}
+
+{% block content %}
+		<h2>Suchergebnisse</h2>
+		{% for model, res in results.items %}
+			<a name="{{ model }}"></a>
+			<h3>{{ model }}</h3>
+			<ul>
+				{% for r in res %}
+					<li><p><a href="{{ r.get_absolute_url }}">{{ r }}</a></p></li>
+				{% endfor %}
+			</ul>
+		{% endfor %}
+{% endblock %}
+

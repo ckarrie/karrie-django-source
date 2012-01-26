@@ -1,0 +1,91 @@
+{% extends 'source/html/base.html' %}
+
+{% block sub_content %}
+{{ block.super }}
+<h2>Übersicht Pakete</h2>
+<ul>
+{% for packet in packets %}
+<li><p><a href="#packet-{{ packet.slug }}">{{ packet }}</a></p>
+	{% for rep in packet.reps.all %}
+	<ul>
+		<li><p><a href="#rep-{{ rep.slug }}">{{ rep }}</a></p></li>
+	</ul>
+	{% endfor %}
+</li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block title %}Modulbaum {{ block.super }}{% endblock %}
+{% block content %}
+		<h2>Modulbaum</h2>
+		<p>Der Modulbaum listet alle eigegeben Pakete und deren Repositories auf. Pro Repository werden alle Module mit ihren Abhängigkeiten Dargestellt. Die Tiefe der Abhängigkeiten ist auf maximal 3 Unterebenen beschränkt.</p>
+		{% for packet in packets %}
+		<h2><a name="packet-{{ packet.slug }}"></a>{{ packet }}</h2>
+		{{ packet.description|safe }}
+		<h3>Module</h3>
+		<p><small>Auflistung aller Module (geordnet nach Repositories), die in der Datenbank vorhanden sind.</small></p>
+		<ul>
+			<p>{% for rep in packet.reps.all %}</p>
+			<li><h4>Repository <a href="{{ rep.get_moduletree_url }}" name="rep-{{ rep.slug }}">{{ rep }}</a></h4>
+				<ul>
+				{% for mod in rep.modul_set.all %}
+					<li class="modul">
+						{% with mod.get_calls.count as total %}
+						<p><a href="{{ mod.get_absolute_url }}">{{ mod }}</a></p>
+						<table>
+							<tr class="">
+								<td colspan="{{ total }}"><p><small>{{ mod.code_description|striptags|truncatewords:20 }}</small></p></td>
+							</tr>
+							<tr class="even">
+								{% for a_call in mod.get_calls|slice:":6" %}<th><p><a href="{{ a_call.get_absolute_url }}">{{ a_call }}</a></p></th>{% endfor %}
+							</tr>
+							<tr>
+								{% for a_call in mod.get_calls|slice:":6" %}
+								<td>
+									<ul>
+									{% for b_call in a_call.get_calls %}
+										<li><p><a href="{{ b_call.get_absolute_url }}">{{ b_call }}</a></p>
+										<ul>
+										{% for c_call in b_call.get_calls %}
+												<li><p><a href="{{ c_call.get_absolute_url }}">{{ c_call }}</a></p></li>
+										{% endfor %}
+										</ul>
+										</li>
+									{% endfor %}
+									</ul>
+								</td>
+								{% endfor %}
+							</tr>
+						{% if total > 6 %}
+							<tr class="even">
+								{% for a_call in mod.get_calls|slice:"6:" %}<th><p><a href="{{ a_call.get_absolute_url }}">{{ a_call }}</a></p></th>{% endfor %}
+							</tr>
+							<tr>
+								{% for a_call in mod.get_calls|slice:"6:" %}
+								<td>
+									<ul>
+									{% for b_call in a_call.get_calls %}
+										<li><p><a href="{{ b_call.get_absolute_url }}">{{ b_call }}</a></p>
+										<ul>
+										{% for c_call in b_call.get_calls %}
+												<li><p><a href="{{ c_call.get_absolute_url }}">{{ c_call }}</a></p></li>
+											{% endfor %}
+										</ul>
+										</li>
+									{% endfor %}
+									</ul>
+								</td>
+								{% endfor %}
+							</tr>
+						{% endif %}
+						</table>
+						{% endwith %}
+					</li>
+				{% endfor %}
+				</ul>
+			</li>
+			{% endfor %}
+		</ul>
+		{% endfor %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+<html>
+	<head>
+		<title>{% block page_title %}{% block title %}{% endblock %} | SOURCE{% endblock %}</title>
+		{% block css %}
+			{{ block.super }}
+			<link rel="stylesheet" type="text/css" media="screen" href="{{ STATIC_URL }}source/style.css" />
+			<link rel="stylesheet" type="text/css" media="print" href="{{ STATIC_URL }}source/print.css" />
+		{% endblock %}
+	</head>
+	<body>
+		{% block navi %}
+		
+		<ul>
+			<li><a href="{% url karrie.django.source.views.index %}">Source-Home</a></li>
+			<li><a href="{% url karrie.django.source.views.modultree %}">Modul-Baum</a></li>
+		</ul>
+		{% endblock %}
+		{% block main_content %}
+		<!--[if IE]>
+		<ul class="error"><li><p>Lieber Besucher, liebe Besucherin,</p><p>Sie verwenden den Internet Explorer. Zur optimalen Darstellugen des Inhalts empfiehlt <a href="http://g2007.ch/">g2007.ch</a> den <a href="http://www.mozilla-europe.org/de/firefox/">Mozilla Firefox Browser</a>.</p></li></ul><br />
+		<![endif]-->
+			<div class="box">
+			{% block content %}
+			{% endblock %} 
+			</div>
+		{% endblock %}
+		
+		{% block sub_content %}
+			<h2>Suche</h2>
+			<p><small>Suche in Modulen (Beschreibung, Parameter, Quelltext), Paketen, Quelltextsprache, Repository.</small></p>
+			<form action="{% url source_search %}" method="post">
+				<table border="0">
+				{% csrf_token %} <!-- left: csrf_token -->
+				{{ search_form.as_table }}
+				<p><input name="post" class="submit-post" value="Abschicken" type="submit" /></p>
+				</table>
+			</form>
+			{% block links %}
+			{% endblock %}
+		{% endblock %}
+	</body>
+</html>

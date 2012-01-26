@@ -1,0 +1,38 @@
+{% extends 'source/html/base.html' %}
+
+{% block title %}{{ block.super }}Paket {{ package }}{% endblock %}
+{% block sub_content %}{{ block.super }}{% endblock %}
+{% block content %}
+		<h2>Paket {{ package }}</h2>
+		{{ package.description|safe }}
+		<h3>Repositories</h3>
+		<ul>
+			{% for rep in package.reps.all %}
+			<li><p>{{ rep }}</p>
+				<ul>
+				{% for mod in rep.modul_set.all %}
+					<li><p><b><a href="{{ mod.get_absolute_url }}">{{ mod }}</a></b></p>
+					<ul>
+					{% for a_call in mod.get_calls %}
+						<li><p><a href="{{ a_call.get_absolute_url }}">{{ a_call }}</a></p>
+						<ul>
+							{% for b_call in a_call.get_calls %}
+								<li><p><a href="{{ b_call.get_absolute_url }}">{{ b_call }}</a></p>
+								<ul>
+								{% for c_call in b_call.get_calls %}
+										<li><p><a href="{{ c_call.get_absolute_url }}">{{ c_call }}</a></p></li>
+									{% endfor %}
+								</ul>
+								</li>
+							{% endfor %}
+						</ul>
+						</li>
+					{% endfor %}
+					</ul>
+					</li>
+				{% endfor %}
+				</ul>
+			</li>
+			{% endfor %}
+		</ul>
+{% endblock %}
