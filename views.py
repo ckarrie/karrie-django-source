@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 
 from django import forms
-from django.views.generic.simple import redirect_to
+from django.shortcuts import redirect
 
 class SearchForm(forms.Form):
     query = forms.CharField(label='Suchwort', max_length=200)
@@ -47,7 +47,7 @@ def mod_details(request, pk):
     rep_slug = modul.repository.slug
     name = modul.name
     redir = reverse('source_modul_named_details', args = (rep_slug, name)) 
-    return redirect_to(request, redir)
+    return redirect(redir)
 
 
 def modultree(request):
